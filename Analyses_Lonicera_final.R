@@ -14,16 +14,10 @@ load("/Users/coralie/Documents/Maîtrise/Données Axe 1/fungal metacom.RData")
 metacom <- metacom[-41,]
 colnames(metacom) <- paste("champi",1:ncol(metacom),sep="")
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# One-way ANOVAs de la performance des plants ====
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-library(datasets)
-library(ggplot2)
-library(multcompView)
-library(dplyr)
-library(carData)
-library(car)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GLM des données de performance des plants ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Cette analyse se fait avec le jeu de données de performance originel, et non
 #avec les moyennes qui seront utilisées plus tard
@@ -31,102 +25,99 @@ library(car)
 croissance <- read.table("croissance.txt", header=TRUE)
 croissance$site <- as.factor(croissance$site)
 
-#ANOVAs initiales sur données brutes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-d.racines.aov <- aov(croissance$diam.racine ~ croissance$site)
-summary(d.racines.aov)
-#p = 0.272
-racines.aov <- aov(croissance$l.racines ~ croissance$site)
-summary(racines.aov)
-#p = 0.0177 *
-tiges.aov <- aov(croissance$masse.tige ~ croissance$site)
-summary(tiges.aov)
-#p = 0.0108 *
-
-# Vérifier les conditions d'application ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#normalité des résidus
-
-#diamètre des racines ~~~~~~~~~~~~~~~
-shapiro.test(resid(d.racines.aov))
-#p-value = 6.266e-14
-#résidus ne suivent pas une distribution normale
-hist(croissance$diam.racine.moy)
-qqPlot(croissance$diam.racine.moy)
-
-#longueur des racines ~~~~~~~~~~~~~~~
-shapiro.test(resid(racines.aov))
-#p-value = 0.002748
-#résidus ne suivent pas une distribution normale
-hist(croissance$l.racines)
-qqPlot(croissance$l.racines)
-
-#transformation racine carrée
-croissance$l.racines.V <- sqrt((croissance$l.racines))
-hist(croissance$l.racines.V)
-qqPlot(croissance$l.racines.V)
-#semble mieux
+#réf : https://www.datacamp.com/tutorial/generalized-linear-models
 
 
-#masse des tiges ~~~~~~~~~~~~~~~
-shapiro.test(resid(tiges.aov))
-#p-value = 1.617e-07
-#résidus ne suivent pas une distribution normale
-hist(croissance$masse.tige)
-qqPlot(croissance$masse.tige)
+library(energy)
+library(multcomp)
+library(multcompView)
+library(datasets)
+library(ggplot2)
+library(dplyr)
 
-#transformation racine carrée
-croissance$masse.tige.V <- sqrt((croissance$masse.tige))
-hist(croissance$masse.tige.V)
-qqPlot(croissance$masse.tige.V)
-#semble mieux
 
-#ANOVAs sur données tranformées racine carré ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-racinesV.aov <- aov(croissance$l.racines.V ~ croissance$site)
-summary(racinesV.aov)
-#p = 0.127
-tigesV.aov <- aov(croissance$masse.tige.V ~ croissance$site)
-summary(tigesV.aov)
-#p = 0.0567
+#Modèle loi normale
 
-#test de normalité sur données transformées ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-shapiro.test(resid(racinesV.aov))
-#toujours pas
-shapiro.test(resid(tigesV.aov))
-#toujours pas
+x=rep(1:5,each=10)
+y=3.4*.8*x+rnorm(50,0,.4)
+mod=glm(y~x,family="gaussian")
+r=residuals(mod)
+hist(r)
+plot(r~x)
+abline(h=0,lty=2)
 
-#égalité des variances ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bartlett.test(croissance$l.racines, croissance$site)
-#variances ne sont pas homogènes
-bartlett.test(croissance$masse.tige, croissance$site)
-#variances ne sont pas hommogènes
+#Masse des tiges ~ sites ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#Tests post-hoc de Tukey ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Tuckey
-d.racines.T <- TukeyHSD(d.racines.aov)
-racines.T <- TukeyHSD(racines.aov)
-tiges.T <- TukeyHSD(tiges.aov)
+#régression normale
+tige.glm <- glm(masse.tige ~ site, data = croissance, family = "gaussian")
+
+#vérifier les conditions
+hist(residuals(tige.glm))
+plot(residuals(tige.glm) ~ croissance$site)
+abline(h=0,lty=2)
+qqPlot(residuals(tige.glm))
+
+# tests post-hoc
+summary(tige.glm)
+tige.T <- glht(tige.glm, mcp(site="Tukey"))
+plot(tige.T)
 
 #attribuer les lettres
-d.racines.cld <- multcompLetters4(d.racines.aov, d.racines.T)
-print(d.racines.cld)
+tige.cld <- cld(tige.T, level=0.05)
+print(tige.cld)
 
-l.racines.cld <- multcompLetters4(racines.aov, racines.T)
-print(l.racines.cld)
 
-tiges.cld <- multcompLetters4(tiges.aov, tiges.T)
-print(tiges.cld)
+# Graphique masse des tiges ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#tableau résumé avec lettres et 3e quartile
+Tk.T <- group_by(croissance, site) %>%
+  summarise(mean=mean(masse.tige), quant = quantile(masse.tige, probs = 0.75))
 
+# extracting the compact letter display and adding to the Tk table
+Tk.T$cld <- tige.cld$mcletters$Letters
+print(Tk.T)
+
+#grahphique longueur
+ggplot(croissance, aes(x=site, y=masse.tige)) + 
+  geom_boxplot(aes(fill = factor(..middle..)), show.legend = FALSE) +
+  scale_fill_brewer(palette = "Greens") +
+  xlab("Site") +
+  ylab("Masse sèche des tiges (g)") +
+  geom_label(data = Tk.T, aes(x = site, y = quant, label = cld), 
+             size = 3, nudge_x=0.15, nudge_y =0.007)
+
+
+#Longueur des racines ~ sites ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#régression normale
+racine.glm <- glm(l.racines ~ site, data = croissance, family = "gaussian")
+
+#vérifier les conditions
+hist(residuals(racine.glm))
+
+plot(residuals(racine.glm) ~ croissance$site)
+abline(h=0,lty=2)
+
+qqPlot(residuals(racine.glm))
+
+# tests post-hoc
+summary(racine.glm)
+racine.T <- glht(racine.glm, mcp(site="Tukey"))
+plot(racine.T)
+
+#attribuer les lettres
+racine.cld <- cld(racine.T, level=0.05)
+print(racine.cld)
 
 # Graphique longueur des racines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #tableau résumé avec lettres et 3e quartile
-Tk.L <- group_by(croissance, site) %>%
+Tk.R <- group_by(croissance, site) %>%
   summarise(mean=mean(l.racines), quant = quantile(l.racines, probs = 0.75)) %>%
   arrange(desc(mean))
 
 # extracting the compact letter display and adding to the Tk table
-l.racines.cld <- as.data.frame.list(l.racines.cld$`croissance$site`)
-Tk.L$cld <- l.racines.cld$Letters
-print(Tk.L)
+racine.cld <- as.data.frame.list(racine.cld$`croissance$site`)
+Tk.R$cld <- racine.cld$Letters
+print(Tk.R)
 
 #grahphique longueur
 ggplot(croissance, aes(x=site, y=l.racines)) + 
@@ -134,30 +125,8 @@ ggplot(croissance, aes(x=site, y=l.racines)) +
   scale_fill_brewer(palette = "Purples") +
   xlab("Site") +
   ylab("Longueur totale des racines (m)") +
-  geom_label(data = Tk.L, aes(x = site, y = quant, label = cld), 
+  geom_label(data = Tk.R, aes(x = site, y = quant, label = cld), 
              size = 3, nudge_x=0.15, nudge_y =0.07)
-
-
-
-# Graphique masse des tiges ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#tableau résumé avec lettres et 3e quartile
-Tk.T <- group_by(croissance, site) %>%
-  summarise(mean=mean(masse.tige), quant = quantile(masse.tige, probs = 0.75)) %>%
-  arrange(desc(mean))
-
-# extracting the compact letter display and adding to the Tk table
-m.tiges.cld <- as.data.frame.list(tiges.cld$`croissance$site`)
-Tk.T$cld <- m.tiges.cld$Letters
-print(Tk.T)
-
-#grahphique longueur
-ggplot(croissance, aes(x=site, y=masse.tige)) + 
-  geom_boxplot(aes(fill = factor(..middle..)), show.legend = FALSE) +
-  scale_fill_brewer(palette = "Blues") +
-  xlab("Site") +
-  ylab("Masse des tiges (g)") +
-  geom_label(data = Tk.T, aes(x = site, y = quant, label = cld), 
-             size = 3, nudge_x=0.18, nudge_y=0.008)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Analyse factorielle multiple (AFM) des données de physicochimie et de colonisation racinaire ====
