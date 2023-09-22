@@ -24,6 +24,8 @@ colnames(metacom) <- paste("champi",1:ncol(metacom),sep="")
 #loader les données ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 croissance <- read.table("croissance.txt", header=TRUE)
 croissance$site <- as.factor(croissance$site)
+croissance$pot <- as.factor(croissance$pot)
+croissance$inoculum <- as.factor(croissance$inoculum)
 
 #réf : https://www.datacamp.com/tutorial/generalized-linear-models
 

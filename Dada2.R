@@ -2,6 +2,8 @@
 ##Analyses d'ADN =====
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#Roulé sur Calcul Canada
+
 #Préparation des données
 
 #appeler les packages
@@ -188,59 +190,93 @@ seq.test <- seq_cluster(seqtab.nochim, threshold = 0.05, method = "complete")
 ## NE FONCTIONNE PAS
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Traiter le jeu de données =====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+load("/Users/coralie/Documents/Maîtrise/Analyse_données génomiques/Données finales/Coralie ITS.RData")
+
+#Modifier les noms de colonnes
+rownames(taxa)=paste0("ASV",1:ncol(comm))
+colnames(comm) = rownames(taxa)
+
+#Modifier les numéros de rangées
+rangee <- c(1:39, 41:50)
+rownames(lonicera) = rangee
+#rangee.moins <- c(1, 2, 3, 5, 8, 9, 11, 12, 13, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 27, 29, 32, 33, 34, 37, 41, 42, 43, 45, 47, 49, 50)
+
+
+#données de performance sans les échantillons manquants des métacommunautés
+perfo.comm <- lonicera [,1:5]
+perfo.comm <- perfo.comm[rownames(comm),]
+
+
+
+#toutes les variables sans les échantillons manquants des métacommunautés
+lonicera.comm <- lonicera[rownames(comm),]
+
+save.image("Lonicera.Coralie.RData")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Isoler les espèces importantes par Elastic Net =====
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#Données d'exemple ; à remplacer
-
 #Importer les données ~~~~~~~~~~~~~~~~~~~~~~~
+
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+#comm : métacommunauté (rangées = sites, colonnes = champignons) pour 31 échantillons de sol
+#taxa : taxonomie (autant de rangées que de champignons, et rangs taxonomiques en colonnes)
+#lonicera : variables de performance, de colonisation racinaire et de physicochimie, pour 49 échantillons de sol
+#croissance : variables de performance, pour 314 pots de Lonicera
+#perfo.comm : variables de performance, pour les 31 échantillons ayant des données fongiques
+#lonicera.comm : variables de performance, de colonisation racinaire et de physicochimie, pour les 31 échantillons ayant des données fongiques
+
 library(tidyverse)
 library(caret)
 library(glmnet)
 library(prospectr)
 
-setwd("~/Documents/Maîtrise/Données Axe 1")
-
-lonicera <- read.table("Lonicera.txt", header=TRUE)
-lonicera$site <- as.factor(lonicera$site)
-lonicera$inoculum <- as.factor(lonicera$inoculum)
-#enlever le dernière ligne (stérile)
-lonicera <- lonicera[-50,]
-
 ## Première régression elastic net : en fonction de la masse des tiges ~~~~~~~~~~~~~~~~~~~~~~~
 
 #Préparer le fichier contenant un vecteur de performance et les communautés fongiques ~~~~~~~~~~~~~~~~~~~~~~~
-load("/Users/coralie/Documents/Maîtrise/Données Axe 1/fungal metacom.RData")
-metacom <- metacom[-41,]
-colnames(metacom) <- paste("champi",1:ncol(metacom),sep="")
+
 #avec la masse des tiges
-metacom <- as.data.frame(metacom)
-metacom <- cbind(lonicera$masse.tige, metacom)
-names(metacom)[names(metacom) == 'lonicera$masse.tige'] <- 'masse.tige'
+comm.tige <- as.data.frame(comm)
+comm.tige <- cbind(perfo.comm$masse.tige, comm.tige)
+names(comm.tige)[names(comm.tige) == 'perfo.comm$masse.tige'] <- 'masse.tige'
 
 #régression élastic net
 
 #split the data into training and test data
-sample_size <- floor(0.75 * nrow(metacom))
-metacom.num <- data.matrix(metacom)
-training_index <- kenStone(metacom.num, k=sample_size, metric="euclid")
-train <- metacom[training_index$model, ]
-test <- metacom[training_index$test, ]
-
+sample_size <- floor(0.75 * nrow(comm.tige))
+comm.tige.num <- data.matrix(comm.tige)
+training_index <- kenStone(comm.tige.num, k=sample_size, metric="euclid")
+train <- comm.tige[training_index$model, ]
+test <- comm.tige[training_index$test, ]
 
 # Create two objects to store predictor (x) and response variables (y, median value)
 Predictor.x <- model.matrix(masse.tige~., train)[,-1]
 Response.y <- train[,1]
-
 
 #tune parameters to identify the best alpha and lambda values
 #We will tune the model by iterating over a number of alpha and lambda pairs and we can see which pair has the lowest associated error
 model.net <- train(masse.tige~., train, method = "glmnet",trControl = trainControl("cv", number = 10),tuneLength = 10)
 #attention, plusieurs messages d'erreur avec le fichier de pratique
 model.net$bestTune
-coef(model.net$finalModel, model.net$bestTune$lambda)
-#changent d'une fois à l'autre
-#champignons 12, 22 et 31
+#alpha      lambda
+#71   0.8 0.007908121
+all.coef <- coef(model.net$finalModel, model.net$bestTune$lambda)
+all.coef.mtx <- as.matrix(all.coef)
+all.coef.df <- as.data.frame(all.coef.mtx)
+all.coef.dt <- as.data.frame.table(all.coef.df)
+
+for(t in 1:2369)
+{
+if (all.coef[t,] > 0) {
+  print(rownames(all.coef[t,]))
+        }
+}
+
 
 x.test.net <- model.matrix(masse.tige~., test)[,-1]
 predictions.net <- model.net %>% predict(x.test.net)
@@ -248,26 +284,40 @@ predictions.net <- model.net %>% predict(x.test.net)
 data.frame(RMSE.net = RMSE(predictions.net, test$masse.tige),Rsquare.net = R2(predictions.net, test$masse.tige))
 
 
+
 ## Deuxième régression elastic net : en fonction de la longueur des racines ~~~~~~~~~~~~~~~~~~~~~~~
 #Probably best to remove all items from the environment first
 
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+#comm : métacommunauté (rangées = sites, colonnes = champignons) pour 31 échantillons de sol
+#taxa : taxonomie (autant de rangées que de champignons, et rangs taxonomiques en colonnes)
+#lonicera : variables de performance, de colonisation racinaire et de physicochimie, pour 49 échantillons de sol
+#croissance : variables de performance, pour 314 pots de Lonicera
+#perfo.comm : variables de performance, pour les 31 échantillons ayant des données fongiques
+#lonicera.comm : variables de performance, de colonisation racinaire et de physicochimie, pour les 31 échantillons ayant des données fongiques
+
+library(tidyverse)
+library(caret)
+library(glmnet)
+library(prospectr)
+
 #Préparer le fichier contenant un vecteur de performance et les communautés fongiques ~~~~~~~~~~~~~~~~~~~~~~~
-load("/Users/coralie/Documents/Maîtrise/Données Axe 1/fungal metacom.RData")
-metacom <- metacom[-41,]
-colnames(metacom) <- paste("champi",1:ncol(metacom),sep="")
-#avec la masse des tiges
-metacom <- as.data.frame(metacom)
-metacom <- cbind(lonicera$l.racines, metacom)
-names(metacom)[names(metacom) == 'lonicera$l.racines'] <- 'l.racines'
+
+#avec la longueur des racines
+comm.racine <- as.data.frame(comm)
+comm.racine <- cbind(perfo.comm$masse.tige, comm.racine)
+names(comm.racine)[names(comm.racine) == 'perfo.comm$l.racines'] <- 'l.racines'
+
 
 #régression élastic net
 
 #split the data into training and test data
-sample_size <- floor(0.75 * nrow(metacom))
-metacom.num <- data.matrix(metacom)
-training_index <- kenStone(metacom.num, k=sample_size, metric="euclid")
-train <- metacom[training_index$model, ]
-test <- metacom[training_index$test, ]
+sample_size <- floor(0.75 * nrow(comm.racine))
+comm.racine.num <- data.matrix(comm.racine)
+training_index <- kenStone(comm.racine.num, k=sample_size, metric="euclid")
+train <- comm.racine[training_index$model, ]
+test <- comm.racine[training_index$test, ]
 
 
 # Create two objects to store predictor (x) and response variables (y, median value)
