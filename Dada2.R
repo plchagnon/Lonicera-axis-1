@@ -513,7 +513,7 @@ ggplot(new.champignons, aes(x = ASV, y=Coefficient)) +
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Elastic net #4 : masse des tiges sur données transformées Hellinger =====
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
 
 #Préparer le fichier contenant un vecteur de performance et les communautés fongiques ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -621,7 +621,7 @@ ggplot(new.champignons4, aes(x = ASV, y=Coefficient)) +
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Elastic net #5 : masse des tiges sur données transformées chi-carré =====
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
 
 #Préparer le fichier contenant un vecteur de performance et les communautés fongiques ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -718,3 +718,115 @@ ggplot(new.champignons5, aes(x = ASV, y=Coefficient)) +
 
 saveRDS(new.champignons5, file = "Autre.RData")
 
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Elastic net #6 : masse des tiges sur abondances relatives =====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Autre.Rdata")
+
+
+rel=function(x){x/sum(x)}
+comm.rel=t(apply(comm,1,rel))
+
+#corrélation
+comm.rel <- as.matrix(comm.rel)
+comm <- as.matrix(comm)
+
+cor.test(c(comm), c(comm.rel))
+
+
+#Préparer le fichier contenant un vecteur de performance et les communautés fongiques ~~~~~~~~~~~~~~~~~~~~~~~
+
+comm.rel <- as.data.frame(comm.rel)
+comm.rel <- cbind(perfo.comm$masse.tige, comm.rel)
+names(comm.rel)[names(comm.rel) == 'perfo.comm$masse.tige'] <- 'masse.tige'
+
+#régression élastic net
+
+#split the data into training and test data
+sample_size <- floor(0.9 * nrow(comm.rel))
+comm.rel.num <- data.matrix(comm.rel)
+training_index <- kenStone(comm.rel.num, k=sample_size, metric="euclid")
+train <- comm.rel[training_index$model, ]
+test <- comm.rel[training_index$test, ]
+
+# Create two objects to store predictor (x) and response variables (y, median value)
+Predictor.x <- model.matrix(masse.tige~., train)[,-1]
+Response.y <- train[,1]
+
+#tune parameters to identify the best alpha and lambda values
+#We will tune the model by iterating over a number of alpha and lambda pairs and we can see which pair has the lowest associated error
+model.net <- train(masse.tige~., train, method = "glmnet",trControl = trainControl("cv", number = 10),tuneLength = 10)
+#attention, plusieurs messages d'erreur avec le fichier de pratique
+model.net$bestTune
+#avec 90% des données dans train
+#   alpha    lambda
+#62     0.7 0.007345175
+
+#varImp de caret
+varImp(model.net)
+varImp(model.net, scale=FALSE)
+
+#trouver les espèces à contribution significative
+all.coef <- coef(model.net$finalModel, model.net$bestTune$lambda)
+champignons6 <- all.coef[!all.coef[,1]==0,]
+#6 espèces seulement
+# ASV 593, 820, 860, 270, 185, 107
+#5 en commun avec elastic net sur données brutes : 593, 820, 270, 185, 107
+#188 et 192 ont disparut
+# et 860 est nouveaux
+
+x.test.net <- model.matrix(masse.tige~., test)[,-1]
+predictions.net <- model.net %>% predict(x.test.net)
+
+data.frame(RMSE.net = RMSE(predictions.net, test$masse.tige),Rsquare.net = R2(predictions.net, test$masse.tige))
+#avec 90% des données dans train
+#     RMSE.net Rsquare.net
+#1 0.008566437   0.2076059
+
+#Ajouter les espèces sélectionnées à un fichier 
+champignons6
+ASV.6 <- cbind(comm.rel$ASV107, comm.rel$ASV185, comm.rel$ASV270, comm.rel$ASV593, comm.rel$ASV820, comm.rel$ASV860)
+rownames(ASV.6) = rownames(comm.rel)
+ASV.names6 <- c(paste0(taxa[107,6], taxa[107,7]),
+                paste0(taxa[185,6], taxa[185,7]), 
+                paste0(taxa[270,6], taxa[270,7]), 
+                paste0(taxa[593,6], taxa[593,7]), 
+                paste0(taxa[820,6], taxa[820,7]),
+                paste0(taxa[860,6], taxa[860,7]))
+colnames(ASV.6) = ASV.names6
+ASV.6 = as.data.frame(ASV.6)
+
+
+#ajouter au fichier RData
+setwd("~/Documents/Maîtrise/Données Axe 1")
+
+resave(ASV.6,file='Autre.Rdata')
+resave(ASV.names6,file='Autre.Rdata')
+resave(champignons6,file='Autre.Rdata')
+
+lsdata('Autre.RData')
+
+#graphique
+champignons6 <- as.data.frame(champignons6)
+
+new.champignons6 <- cbind(rownames(champignons6), champignons6$champignons6)
+new.champignons6 <- as.data.frame(new.champignons6)
+new.champignons6 <- new.champignons6[-1,]
+new.champignons6 <- cbind(ASV.names6, new.champignons6)
+colnames(new.champignons6) = (c("Taxo", "ASV", "Coefficient"))
+
+new.champignons6$ASV <- as.factor(new.champignons6$ASV)
+new.champignons6$Coefficient <- as.numeric(new.champignons6$Coefficient)
+
+resave(new.champignons6,file='Autre.Rdata')
+
+#graphique
+ggplot(new.champignons6, aes(x = ASV, y=Coefficient)) + 
+  geom_point() +
+  geom_hline(yintercept = 0, col = "gray", size = 0.4, linetype="dashed")
+
+saveRDS(new.champignons5, file = "Autre.RData")

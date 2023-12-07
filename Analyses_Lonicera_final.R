@@ -6,10 +6,10 @@ setwd("~/Documents/Maîtrise/Données Axe 1")
 load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
 #comm : métacommunauté (rangées = sites, colonnes = champignons) pour 31 échantillons de sol
 #taxa : taxonomie (autant de rangées que de champignons, et rangs taxonomiques en colonnes)
-#ASV : abondance de 7 espèces de champignons jugées pertinentes par régression elastic net, pour 31 échantillons de sol
+#ASV : abondance de 7 espèces de champignons jugées pertinentes par régression elastic net, pour 32 échantillons de sol
 #lonicera : variables de performance, de colonisation racinaire et de physicochimie, pour 49 échantillons de sol
 #croissance : variables de performance, pour 314 pots de Lonicera
-#perfo.comm : variables de performance, pour les 31 échantillons ayant des données fongiques
+#perfo.comm : variables de performance, pour les 32 échantillons ayant des données fongiques
 #lonicera.comm : variables de performance, de colonisation racinaire, de physicochimie, et abondance des ASV de champignons pertinentes, pour les 31 échantillons ayant des données fongiques
 
 
@@ -128,6 +128,92 @@ ggplot(croissance, aes(x=site, y=l.racines)) +
   ylab("Longueur totale des racines (m)") +
   geom_label(data = Tk.R, aes(x = site, y = quant, label = cld), 
              size = 3, nudge_x=0.15, nudge_y =0.07)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GLM des données de physicochimie ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#loader les données ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+
+
+library(energy)
+library(multcomp)
+library(multcompView)
+library(datasets)
+library(ggplot2)
+library(dplyr)
+library(car)
+
+
+#Créer un modèle de loi normale
+x=rep(1:5,each=10)
+y=3.4*.8*x+rnorm(50,0,.4)
+mod=glm(y~x,family="gaussian")
+r=residuals(mod)
+hist(r)
+plot(r~x)
+abline(h=0,lty=2)
+
+#Phosphore ~ sites ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#régression normale
+phos.glm <- glm(phosphore ~ site, data = lonicera, family = "gaussian")
+
+#vérifier les conditions
+hist(residuals(phos.glm))
+plot(residuals(phos.glm) ~ lonicera$site)
+abline(h=0,lty=2)
+qqPlot(residuals(phos.glm))
+# pas tout-à-fait normal
+
+#transformation log
+lonicera$phosphore.log <- log(lonicera$phosphore)
+#régression racine carrée
+phos.glm.l <- glm(phosphore.log ~ site, data = lonicera, family = "gaussian")
+
+#vérifier les conditions
+hist(residuals(phos.glm.r))
+plot(residuals(phos.glm.r) ~ lonicera$site)
+abline(h=0,lty=2)
+qqPlot(residuals(phos.glm.r))
+# pas tout-à-fait normal
+# tests post-hoc
+summary(phos.glm.r)
+#valeur p du site 1: ??
+#valeur p du site 2: 4.87e-06 ***
+#valeur p du site 3: 2.30e-06 ***
+#valeur p du site 4: 7.24e-08 ***
+#valeur p du site 5: 6.22e-07 ***
+
+tige.T <- glht(tige.glm, mcp(site="Tukey"))
+plot(tige.T)
+
+#attribuer les lettres
+tige.cld <- cld(tige.T, level=0.05)
+print(tige.cld)
+
+
+# Graphique masse des tiges ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#tableau résumé avec lettres et 3e quartile
+Tk.T <- group_by(croissance, site) %>%
+  summarise(mean=mean(masse.tige), quant = quantile(masse.tige, probs = 0.75)) %>%
+  arrange(desc(mean))
+
+# extracting the compact letter display and adding to the Tk table
+Tk.T$cld <- tige.cld$mcletters$Letters
+print(Tk.T)
+
+#grahphique longueur
+ggplot(croissance, aes(x=site, y=masse.tige)) + 
+  geom_boxplot(aes(fill = factor(..middle..)), show.legend = FALSE) +
+  scale_fill_brewer(palette = "Greens") +
+  xlab("Site") +
+  ylab("Masse sèche des tiges (g)") +
+  geom_label(data = Tk.T, aes(x = site, y = quant, label = cld), 
+             size = 3, nudge_x=0.15, nudge_y =0.007)
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Analyse factorielle multiple (AFM) des données de physicochimie et de colonisation racinaire ====
@@ -459,24 +545,25 @@ plot(loni.part.all,
 
 #meilleur diagramme
 
-venn <- euler(c("Physicochimie" = 0,
-                "Colonisation" = loni.part.all$part$fract$Adj.R.square[2],
-                "Champignons" = loni.part.all$part$fract$Adj.R.square[3],
-                "Residuals" = loni.part.all$part$indfract$Adj.R.square[8],
-                "Physicochimie&Colonisation" = loni.part.all$part$indfract$Adj.R.square[4],
-                "Physicochimie&Champignons" = 0,
-                "Colonisation&Champignons" = loni.part.all$part$indfract$Adj.R.square[5],
-                "Colonisation&Champignons&Physicochimie" = 0
-                ))
+fit3 <- c("Physicochimie" = 0,
+          "Colonisation" = 0,
+          "Champignons" = loni.part.all$part$indfract$Adj.R.square[3],
+          "Residuals" = loni.part.all$part$indfract$Adj.R.square[8],
+          "Physicochimie&Colonisation" = loni.part.all$part$indfract$Adj.R.square[4],
+          "Physicochimie&Champignons" = 0,
+          "Colonisation&Champignons" = loni.part.all$part$indfract$Adj.R.square[5],
+          "Colonisation&Champignons&Physicochimie" = 0)
+
+venn3 <- euler(fit3, shape = "ellipse")
 plot(venn, shape = "ellipse")
 
-plot(venn,
+plot(venn3,
      fills = c("dodgerblue4", "darkgoldenrod1", "cornsilk4", "coral1"),
      edges = FALSE,
      fontsize = 8,
      quantities = list(fontsize = 8))
 
-plot(venn,
+plot(venn3,
      fills = brewer.pal(4, "Spectral"),
      edges = FALSE,
      fontsize = 8,
@@ -746,4 +833,155 @@ ggplot(data=seq.site, aes(x=PC1, y=PC2, colour = Sites.comm))+
   xlab("Premier axe en compostantes principales")+
   ylab("Deuxième axe en compostantes principales")+
   stat_ellipse(type = "t", lwd = 0.4, level = 0.75)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Régession linéaire mixte ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+library(lme4)
+library(base)
+
+#importer les données 
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+
+
+#Scale
+lonicera.comm.s <- scale(lonicera.comm[, 3:23], center = TRUE, scale = TRUE)
+lonicera.comm.s <- as.data.frame(lonicera.comm.s)
+lonicera.comm.s <- cbind(lonicera.comm$site, lonicera.comm.s)
+names(lonicera.comm.s)[names(lonicera.comm.s) == 'lonicera.comm$site'] <- 'site'
+
+#Avec glmer de lme4
+#version sans effet de site
+model.lmer <- lmer(masse.tige ~ arb + coils + ves + nonmyc + dse + pH + ammonium + nitrate + phosphore + wsa + mo + Calonectria_sp. + Rhizophaguss_irregularis + Rhizophaguss_intraradices + Claroideoglomu_sp. + Rhizophaguss_intraradices + Podilas_humilis + Minutisphaeras_aspera + (1|site), data = lonicera.comm.s)
+
+#summary
+summary(model.lmer)
+print(model.lmer, correlation=TRUE)
+plot(model.lmer)
+
+#version avec effet de site
+model.lmer <- lmer(masse.tige ~ arb + coils + ves + nonmyc + dse + pH + ammonium + nitrate + phosphore + wsa + mo + Calonectria_sp. + Rhizophaguss_irregularis + Rhizophaguss_intraradices + Claroideoglomu_sp. + Rhizophaguss_intraradices + Podilas_humilis + Minutisphaeras_aspera, data = lonicera.comm.s)
+
+#summary
+summary(model.lmer)
+print(model.lmer, correlation=TRUE)
+plot(model.lmer)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Régession globale ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+library(stats)
+
+#importer les données 
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+
+#régression globale en fonction de toutes les variables
+test.glm <- glm(masse.tige ~ arb + coils + ves + nonmyc + dse + pH + ammonium + nitrate + phosphore + wsa + mo + Calonectria_sp. + Rhizophaguss_irregularis + Rhizophaguss_intraradices + Claroideoglomu_sp. + Rhizophaguss_intraradices + Podilas_humilis + Minutisphaeras_aspera, data = lonicera.comm, family = "gaussian")
+summary(test.glm)
+
+newdata = data.frame(disp=200, hp= 100)
+predict(test.glm, type="response")
+
+#régression globale sans les variables fongiques
+test.glm2 <- glm(masse.tige ~ arb + coils + ves + nonmyc + dse + pH + ammonium + nitrate + phosphore + wsa + mo, data = lonicera, family = "gaussian")
+summary(test.glm2)
+
+#régression avec juste une variable
+test.glm3 <- glm(masse.tige ~ phosphore, data = lonicera, family = "gaussian")
+summary(test.glm3)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Histogramme ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+library(ggplot2)
+library(RColorBrewer)
+
+#importer les données 
+setwd("~/Documents/Maîtrise/Données Axe 1")
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Lonicera.Coralie.RData")
+
+#créer les barres d'erreur
+ecart <- NULL
+for(t in 1:50)
+{ecart <- append(ecart, sd(croissance$masse.tige[croissance$inoculum == t]))}
+ecart <- ecart[-40]
+cbind(lonicera, ecart)
+                     
+#ggplot : avec les moyennes
+ggplot(lonicera, aes(x = site, y = masse.tige, color=site))+
+  geom_col(position=position_dodge2(width = 0.9), show.legend = FALSE)+
+  geom_errorbar(aes(ymin=masse.tige-ecart, ymax=masse.tige+ecart), width=0.4, position =  position_dodge2(width = 0.9), show.legend = FALSE)+
+  xlab("Sites")+
+  ylab("Masse des tiges (g)")
+
+# à faire : barres d'erreur et changer les couleurs
+
+ggplot(croissance, aes(x = inoculum, y = masse.tige, color=site))+
+  geom_col(position="dodge", show.legend = FALSE)
+
+ggplot(lonicera, aes(x = site, y = masse.tige, fill=inoculum))+
+  geom_bar(position="dodge", stat = "identity", show.legend = FALSE)+
+  geom_errorbar(aes(ymin=masse.tige-ecart, ymax=masse.tige+ecart), width=0.4, position =  position_dodge2(width = 0.9), show.legend = FALSE)+
+  xlab("Sites")+
+  ylab("Masse des tiges (g)")
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Section tests ====
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#VarPart sur tout
+a = -0.00557
+b = -0.05649
+c = 0.33373
+d = 0.06491
+e =  0.32944
+f = -0.02993
+g = -0.16380
+
+a+d+f+g
+b+d+e+g
+c+e+f+g
+
+
+#Varpart sur les données d'abondance relative
+load("/Users/coralie/Documents/Maîtrise/Données Axe 1/Autre.Rdata")
+
+# biomasse en fonction de la p-c, colonisation et les espèces de champignon sélectionnées ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(loni.part.rel <- varpart(loni.perfo$masse.tige, loni.pc, loni.colo, ASV.6)) 
+
+plot(loni.part.rel, 
+     digits = 2, 
+     Xnames = c("Physicochimie", "Colonisation", "Champignons"),
+     bg = c("yellow", "green", "pink"))
+
+#meilleur diagramme
+venn <- euler(c("Physicochimie" = loni.part.rel$part$indfract$Adj.R.square[1],
+                "Colonisation" = 0,
+                "Champignons" = loni.part.rel$part$indfract$Adj.R.square[3],
+                "Residuals" = loni.part.rel$part$indfract$Adj.R.square[8],
+                "Physicochimie&Colonisation" = loni.part.rel$part$indfract$Adj.R.square[4],
+                "Physicochimie&Champignons" = 0,
+                "Colonisation&Champignons" = loni.part.rel$part$indfract$Adj.R.square[5],
+                "Colonisation&Champignons&Physicochimie" = 0
+))
+
+plot(venn, shape = "ellipse")
+
+plot(venn,
+     fills = c("dodgerblue4", "darkgoldenrod1", "cornsilk4", "coral1"),
+     edges = FALSE,
+     fontsize = 8,
+     quantities = list(fontsize = 8))
+
+plot(venn,
+     fills = brewer.pal(4, "Spectral"),
+     edges = FALSE,
+     fontsize = 8,
+     quantities = list(fontsize = 8))
 
