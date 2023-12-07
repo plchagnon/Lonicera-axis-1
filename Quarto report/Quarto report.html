@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Response of Lonicera maackii to soil chemistry and fungal communities.</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Quarto report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Quarto report_files/libs/quarto-html/quarto.js"></script>
+<script src="Quarto report_files/libs/quarto-html/popper.min.js"></script>
+<script src="Quarto report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Quarto report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Quarto report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Quarto report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Quarto report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Quarto report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Quarto report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Response of <em>Lonicera maackii</em> to soil chemistry and fungal communities.</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><br></p>
+<p>This project aims at disentangling the relative contribution of soil physico-chemistry and fungal communities in driving <em>Lonicera maackii</em> performance. In 2019, we sampled 50 soil inocula, from 5 distinct sites, and grew <em>Lonicera maackii</em> in these inocula in a growth chamber, for 12 weeks.</p>
+<p>We measured shoot dry mass, root length and average diameter, and root fungal colonization as response variables.</p>
+<p>In parallel, for each inoculum, we measured soil physico-chemistry and extracted DNA from ~250mg soil to characterize fungal community structure using Illumina MiSeq technology (PE250bp), with amplicons targeting the ITS2 region (<a href="https://doi.org/10.1007/978-1-4939-3369-3_4">primers = gITS7 [fwd] and ITS4 [rev]</a>). Data are provided as follows:</p>
+<ol type="1">
+<li><p>Soil properties, fungal root colonization and <em>Lonicera</em> performance are all included in the file <a href="../DATA/lonicera.txt">lonicera.txt</a>. <em>Lonicera</em> growth data is averaged for pseudo-replicates belonging to the same inoculum, but raw data for all pseudo-replicates separately are available in <a href="../DATA/raw.growth.txt">raw.growth.txt</a>.</p></li>
+<li><p>Soil fungal community structure can be found in the file <a href="../DATA/comm.txt">comm.txt</a>, where row names are inocula ID and number within each cell are the number of reads found in each inoculum for the corresponding column (fungal sequence variant). The 7-levels taxonomy, under the form of a table with rows corresponding to columns in <a href="../DATA/comm.txt"><code>comm.txt</code></a> is provided in the <a href="../DATA/taxa.txt"><code>taxa.txt</code></a>. We also provide raw sequence files within the sequence read archives (SRA) under the <a href="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1049398"><code>BioProject # PRJNA1049398</code></a>. The SRR numbers associated with all samples can be found in our file <a href="../DATA/SRRs.txt">SRRs.txt</a></p></li>
+</ol>
+<p><br><br></p>
+<section id="metadata" class="level1">
+<h1>METADATA</h1>
+<p>Below are found metadata for each individual data file. All files are organized in a tabular format, so we explain in the metadata the meaning of all column titles, and relevant information as to how that particular piece of information was collected in the project.</p>
+<section id="file-1-comm.txt" class="level2">
+<h2 class="anchored" data-anchor-id="file-1-comm.txt">File 1: <a href="../DATA/comm.txt">comm.txt</a></h2>
+<p><br></p>
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 38%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Column title</th>
+<th style="text-align: left;">Explanation</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ASV1, ASV2, ASV…</td>
+<td style="text-align: left;">Amplicon sequence variants (i.e., unique non-chimeric sequences identified in the study)</td>
+<td style="text-align: left;">The content of each cell represents the number of sequence reads found for each of these fungal taxa (ASVs) in each corresponding soil inoculum (rows).</td>
+</tr>
+</tbody>
+</table>
+<p>In this file, only samples with at least 5000 reads are kept for downstream analyses, ending up in keeping 32 samples out of our 50 samples overall.</p>
+<p><br><br></p>
+</section>
+<section id="file-2-lonicera.txt" class="level2">
+<h2 class="anchored" data-anchor-id="file-2-lonicera.txt">File 2: <a href="../DATA/lonicera.txt">lonicera.txt</a></h2>
+<p><br></p>
+<table class="table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 25%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Column title</th>
+<th style="text-align: left;">Explanation</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Site</td>
+<td style="text-align: left;">The site at which the inoculum (row) has been collected.</td>
+<td style="text-align: left;">Inocula have been collected in 5 sites (5 sites <span class="math inline">\(\times\)</span> 10 inocula per site = 50 inocula overall). All these sites were forested areas with different histories, times since <em>Lonicera</em> invasion and dominant canopy species.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Inoculum</td>
+<td style="text-align: left;">Unique soil inoculum used in the experiment</td>
+<td style="text-align: left;">Consisted of raw live (i.e., unsterilized) soil.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">masse.tige</td>
+<td style="text-align: left;">Dry shoot mass (g)</td>
+<td style="text-align: left;">Measured by harvesting <em>Lonicera</em> aboveground biomass after 12 weeks of growth in the inoculum, and drying at 65C to constant weight.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">l.racines</td>
+<td style="text-align: left;">Total root length (m)</td>
+<td style="text-align: left;">Measured by washing roots free of soil, and scanning them on a flatbed scanner. Root length was estimated using WinRhizo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diam.racines</td>
+<td style="text-align: left;">Average root diameter (mm)</td>
+<td style="text-align: left;">Based on root images acquired as described above, average diameter was estimated by WinRhizo</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">arb</td>
+<td style="text-align: left;">Arbuscules colonization frequency (%)</td>
+<td style="text-align: left;">Based on the <a href="https://doi.org/10.1111/j.1469-8137.1990.tb00476.x">gridline intersect method of McGonigle et al.&nbsp;(1990)</a>, we estimated the frequency of root colonization by <em>Arum</em>-type arbuscules, after staining in ink-vineagar (5% v/v)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">coils</td>
+<td style="text-align: left;">Coils colonization frequency (%)</td>
+<td style="text-align: left;">These were differentiated from arbuscules by the visible presence of interwoven hyphae (as opposed to a dichotomous branching pattern for <em>Arum</em>-type arbuscule).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ves</td>
+<td style="text-align: left;">Vesicles colonization frequency (%)</td>
+<td style="text-align: left;">Again with the gridline intersect method, colonization frequency of roots by arbuscular mycorrhizal (AM) vesicles was estimated</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nonmyc</td>
+<td style="text-align: left;">Non-mycorrhizal structure colonizaiton frequency (%)</td>
+<td style="text-align: left;">Any fungal (or Oomycota) structure that could be clearly established to be non-AM fungal, or not belonging to a dark septate endophyte (see below), was recorded in this category. This includes regularly septate hyphae but not thick melanized hyphae appearing as DSE, and structures looking like <em>Olpidium</em> chlamydospores, or oomycete oospores…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dse</td>
+<td style="text-align: left;">Dark septate endophytes root colonization frequency (%)</td>
+<td style="text-align: left;">In this category were included fungal structure with relatively large hyphal diameter, regular septation, melanized brown appearance and a clear diagnostic feature was the presence of either linear chains, or tufts of microsclerotia. Recognizing that some dark septate endophytes can also stain heavily with ink (and not appear as brownish melanized hyphae), our estimate is not intended to be a clear guild-level colonization estimate, but rather a morphology/appearance-based estimation of different categories of non-AM fungal structures, along with “nonmyc”.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pH</td>
+<td style="text-align: left;">soil pH</td>
+<td style="text-align: left;">Measured in a 1:2 mixture ratio (v/v) with distilled water</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ammonium</td>
+<td style="text-align: left;">NH<sub>4</sub>-N</td>
+<td style="text-align: left;">Estimated by colorimetry following an extraction from soil using 2N KCl</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nitrate</td>
+<td style="text-align: left;">NO<sub>3</sub>-N</td>
+<td style="text-align: left;">Estimated by colorimetry following an extraction from soil using 2N KCl</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">phosphore</td>
+<td style="text-align: left;">orthophosphates</td>
+<td style="text-align: left;">Estimated using a Mehlich-III extraction and a colorimetric test (Murphy-Riley approach with blue molybdate complex)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">wsa</td>
+<td style="text-align: left;">Water-stable aggregates (%)</td>
+<td style="text-align: left;">Percentage of 250 <span class="math inline">\(\mu\textrm{m}\)</span> - 1mm aggregates stable to water immersion cycles as tested in a Yoder’s apparatus.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mo</td>
+<td style="text-align: left;">% Organic matter</td>
+<td style="text-align: left;">Percent organic matter estimated as loss on ignition at 350°C</td>
+</tr>
+</tbody>
+</table>
+<p><br><br></p>
+</section>
+<section id="file-3-taxa.txt" class="level2">
+<h2 class="anchored" data-anchor-id="file-3-taxa.txt">File 3: <a href="./DATA/taxa.txt">taxa.txt</a></h2>
+<p><br></p>
+<table class="table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 70%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column title</th>
+<th>Explanation</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Kingdom</td>
+<td>Kingdom</td>
+<td>The Kingdom to which all fungal ASVs (rows) belong. ASVs are placed in the same order (rows) as columns in <code>comm.txt</code>.</td>
+</tr>
+<tr class="even">
+<td>Phylum</td>
+<td>Phylum</td>
+<td>The phylum to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+<tr class="odd">
+<td>Class</td>
+<td>Class</td>
+<td>The class to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+<tr class="even">
+<td>Order</td>
+<td>Order</td>
+<td>The Order to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+<tr class="odd">
+<td>Family</td>
+<td>Family</td>
+<td>The Family to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+<tr class="even">
+<td>Genus</td>
+<td>Genus</td>
+<td>The Genus to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+<tr class="odd">
+<td>Species</td>
+<td>Species</td>
+<td>The Species to which the ASV belongs. NA means the naive Bayesian classifier was not able to confidently assign a value for that particular level.</td>
+</tr>
+</tbody>
+</table>
+<p><br> <br></p>
+</section>
+</section>
+<section id="bioinformatics" class="level1">
+<h1>Bioinformatics</h1>
+<p>All raw <code>.fastq</code> sequence files are available in the sequence read archives. To retrieve the files, simply use <code>prefetch</code> and <code>fasterq-dump</code> from the <code>sra toolkit</code>. More information available <a href="https://www.ncbi.nlm.nih.gov/sra/docs/sradownload/">here</a>. In our case, all SRRs required for download are grouped in the file <a href="../DATA/SRRs.txt">SRRs.txt</a>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">### Assuming we are in the main (Parent) directory of the project</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">prefetch</span> <span class="at">--option-file</span> ./DATA/SRRs.txt <span class="at">-O</span> Reads/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> fastq_files</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> fastq_files</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> ../Reads/<span class="pp">*</span>/<span class="pp">*</span>.sra <span class="kw">;</span> <span class="cf">do</span> <span class="ex">fasterq-dump</span> <span class="va">$i</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After that, the <code>Reads</code> folder can simply be removed, as all the fastqfiles are now in the current directory and ready for downstream <code>dada2</code> analyses.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-r</span> Reads</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are then ready to move on with bioinformatic treatment of these sequences, once we have them in the directory named <code>fastq_files</code>. This is done using the R script <a href="../SCRIPTS/dada2_bioinfo_script.R">dada2_bioinfo_script.R</a>. What this does:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dada2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">"./fastq_files"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(path)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>thr<span class="ot">=</span><span class="dv">20</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fnFs <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">list.files</span>(path, <span class="at">pattern=</span><span class="st">"_1.fastq"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fnRs <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">list.files</span>(path, <span class="at">pattern=</span><span class="st">"_2.fastq"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>sample.names <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">strsplit</span>(<span class="fu">basename</span>(fnFs), <span class="st">"_"</span>), <span class="st">`</span><span class="at">[</span><span class="st">`</span>, <span class="dv">1</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> <span class="fu">file.path</span>(path, <span class="st">"filtered"</span>, <span class="fu">paste0</span>(sample.names, <span class="st">"_F_filt.fastq.gz"</span>))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>filtRs <span class="ot">&lt;-</span> <span class="fu">file.path</span>(path, <span class="st">"filtered"</span>, <span class="fu">paste0</span>(sample.names, <span class="st">"_R_filt.fastq.gz"</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(filtFs) <span class="ot">&lt;-</span> sample.names</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(filtRs) <span class="ot">&lt;-</span> sample.names</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(fnFs, filtFs, fnRs, filtRs, </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">truncLen=</span><span class="fu">c</span>(<span class="dv">250</span>,<span class="dv">200</span>),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">trimLeft=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">20</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">maxN=</span><span class="dv">0</span>, </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">truncQ=</span><span class="dv">2</span>, </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">compress=</span><span class="cn">TRUE</span>, <span class="at">multithread=</span>thr) </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">learnErrors</span>(filtFs, <span class="at">multithread=</span>thr)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">learnErrors</span>(filtRs, <span class="at">multithread=</span>thr)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(filtFs, <span class="at">err=</span>errF, <span class="at">multithread=</span>thr)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(filtRs, <span class="at">err=</span>errR, <span class="at">multithread=</span>thr)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>mergers <span class="ot">&lt;-</span> <span class="fu">mergePairs</span>(dadaFs, filtFs, dadaRs, filtRs, <span class="at">verbose=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>seqtab <span class="ot">&lt;-</span> <span class="fu">makeSequenceTable</span>(mergers)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>seqtab.nochim <span class="ot">&lt;-</span> <span class="fu">removeBimeraDenovo</span>(seqtab, <span class="at">method=</span><span class="st">"consensus"</span>, <span class="at">multithread=</span>thr, <span class="at">verbose=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>getN <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">getUniques</span>(x))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>track <span class="ot">&lt;-</span> <span class="fu">cbind</span>(out, <span class="fu">sapply</span>(dadaFs, getN), <span class="fu">sapply</span>(dadaRs, getN), <span class="fu">sapply</span>(mergers, getN), <span class="fu">rowSums</span>(seqtab.nochim))</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(track) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"input"</span>, <span class="st">"filtered"</span>, <span class="st">"denoisedF"</span>, <span class="st">"denoisedR"</span>, <span class="st">"merged"</span>, <span class="st">"nonchim"</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(track) <span class="ot">&lt;-</span> sample.names</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(track)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="fu">write.table</span>(track,<span class="st">"track.txt"</span>,<span class="at">row.names=</span>F,<span class="at">col.names=</span>F,<span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>taxa <span class="ot">&lt;-</span> <span class="fu">assignTaxonomy</span>(seqtab.nochim, <span class="st">"UNITE_9.0_2023-07-25.fasta"</span>, <span class="at">multithread=</span><span class="dv">20</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="fu">save.image</span>(<span class="st">"OutputITS.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>…</p>
+</section>
+<section id="dataset-filtering" class="level1">
+<h1>Dataset filtering</h1>
+<p>The object <code>OutputITS.RData</code> contains a ASVs <span class="math inline">\(\times\)</span> samples table, with non-chimeric fungal sequences as columns and all study samples (and additional rows from another study also included in the MiSeq run in fact!) as rows. Unfortunately, sequencing depth was quite uneven among samples.</p>
+<p>As a first filtering, we keep only the 50 samples relevant for our current <em>Lonicera</em> study:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"OutputITS.RData"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">### keep only the non-chimeric sequence table and the associated taxonomy for columns (fungal ASVs)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">setdiff</span>(<span class="fu">ls</span>(),<span class="fu">c</span>(<span class="st">"seqtab.nochim"</span>,<span class="st">"taxa"</span>)))    </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">### filter</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>seqtab.nochim</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>y<span class="ot">=</span>x[<span class="fu">sapply</span>(<span class="fu">strsplit</span>(<span class="fu">rownames</span>(x),<span class="st">"-"</span>),<span class="st">'['</span>,<span class="dv">1</span>)<span class="sc">%in%</span><span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,]   </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Store the community table (ASV x samples) in the object "comm" and clean up the environment</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>comm<span class="ot">=</span>y</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">setdiff</span>(<span class="fu">ls</span>(),<span class="fu">c</span>(<span class="st">"comm"</span>,<span class="st">"taxa"</span>))) </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="do">### save the environment</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">save.image</span>(<span class="st">"Lonicera_ITS.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Then, because several samples came out either with no reads, or very few (see below), we needed to filter out these samples:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"Lonicera_ITS.RData"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(showtext)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">family=</span><span class="st">"raleway"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"../figures/sequencing_depth.png"</span>,<span class="at">res=</span><span class="dv">1200</span>,<span class="at">units=</span><span class="st">"in"</span>,<span class="at">height=</span><span class="fl">3.5</span>,<span class="at">width=</span><span class="fl">3.5</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(comm)<span class="ot">=</span><span class="fu">paste0</span>(<span class="st">"Inoc. "</span>,<span class="fu">sapply</span>(<span class="fu">strsplit</span>(<span class="fu">rownames</span>(comm),<span class="st">"-"</span>),<span class="st">'['</span>,<span class="dv">1</span>))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">barplot</span>(<span class="fu">rowSums</span>(comm)[<span class="fu">order</span>(<span class="fu">rowSums</span>(comm))],<span class="at">width=</span>.<span class="dv">5</span>,<span class="at">space=</span>.<span class="dv">5</span>,<span class="at">horiz=</span>T,<span class="at">yaxt=</span><span class="st">"n"</span>,<span class="at">xaxt=</span><span class="st">"n"</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">80000</span>),<span class="at">yaxs=</span><span class="st">"i"</span>,<span class="at">col=</span><span class="st">"#2E4B7F"</span>,<span class="at">border=</span><span class="cn">NA</span>,<span class="at">cex.axis=</span><span class="dv">1</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">38</span>))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="sc">-</span><span class="dv">10</span>,<span class="dv">100000</span>,<span class="dv">100</span>,<span class="at">col=</span><span class="st">"grey96"</span>,<span class="at">border=</span><span class="cn">NA</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">100000</span>,<span class="dv">10000</span>),<span class="at">lwd=</span>.<span class="dv">5</span>,<span class="at">lty=</span><span class="dv">3</span>,<span class="at">col=</span><span class="st">"grey80"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">barplot</span>(<span class="fu">rowSums</span>(comm)[<span class="fu">order</span>(<span class="fu">rowSums</span>(comm))],<span class="at">width=</span>.<span class="dv">5</span>,<span class="at">space=</span>.<span class="dv">5</span>,<span class="at">horiz=</span>T,<span class="at">yaxt=</span><span class="st">"n"</span>,<span class="at">xaxt=</span><span class="st">"n"</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">80000</span>),<span class="at">yaxs=</span><span class="st">"i"</span>,<span class="at">col=</span><span class="st">"#2E4B7F"</span>,<span class="at">border=</span><span class="cn">NA</span>, <span class="at">add=</span>T)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>tt<span class="ot">=</span><span class="fu">rownames</span>(comm)[<span class="fu">order</span>(<span class="fu">rowSums</span>(comm))]</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>,<span class="at">mgp=</span><span class="fu">c</span>(<span class="fl">1.5</span>,.<span class="dv">02</span>,<span class="dv">0</span>),<span class="at">cex.axis=</span><span class="dv">7</span>,<span class="at">lwd=</span>.<span class="dv">8</span>,<span class="at">tck=</span>.<span class="dv">04</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">minor.tick</span>(<span class="at">nx=</span><span class="dv">4</span>,<span class="at">ny=</span><span class="dv">1</span>,<span class="at">tick.ratio=</span><span class="sc">-</span>.<span class="dv">5</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">1000</span>,<span class="at">y=</span>x,tt,<span class="at">pos=</span><span class="dv">2</span>,<span class="at">xpd=</span>T,<span class="at">cex=</span><span class="dv">4</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">xlab=</span><span class="st">"Sequences reads"</span>,<span class="at">mgp=</span><span class="fu">c</span>(<span class="fl">1.5</span>,.<span class="dv">1</span>,<span class="dv">0</span>),<span class="at">cex.lab=</span><span class="dv">12</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">box</span>(<span class="at">lwd=</span>.<span class="dv">8</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="fig-seq.depth" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="../figures/sequencing_depth.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Sequencing depth per sample</figcaption>
+</figure>
+</div>
+<p><br></p>
+<p>Now (1) filtering samples with sufficient sequence reads, (2) rarefying at a fixed sequencing effort per sample and (3) removing fungal ASVs (columns):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"Lonicera_ITS.RData"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>comm<span class="ot">=</span>comm[<span class="fu">rowSums</span>(comm)<span class="sc">&gt;</span><span class="dv">5000</span>,]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>comm<span class="ot">=</span><span class="fu">rrarefy</span>(comm,<span class="dv">32912</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span>comm[,<span class="sc">!</span><span class="fu">colSums</span>(comm)<span class="sc">==</span><span class="dv">0</span>]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>taxa<span class="ot">=</span>taxa[<span class="sc">!</span><span class="fu">colSums</span>(comm)<span class="sc">==</span><span class="dv">0</span>,]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>comm<span class="ot">=</span>temp</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">save.image</span>(<span class="st">"Lonicera_ITS_rarefied.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

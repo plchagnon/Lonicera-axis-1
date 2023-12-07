@@ -1,0 +1,40 @@
+/*-- scss:rules --*/
+
+table{
+   width:100%;
+   table-layout: fixed;
+   overflow-wrap: break-word;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #EFF6FA;
+	font-size: 16px;
+	font-family: system-ui;
+	letter-spacing: -0.2px;
+	line-height: 18px;
+}
+tbody tr:nth-child(odd) {
+	background-color: #fff;
+	font-size: 16px;
+	font-family: system-ui;
+	letter-spacing: -0.2px;
+	line-height: 18px;
+}
+tbody tr:last-of-type {
+    border-bottom: 1px solid #21506F;
+}
+
+thead {
+	background-color: #21506F;
+	color: white;
+	font-size: 0.800rem;
+	text-transform: uppercase;
+	letter-spacing: 2%;
+	margin-top: 20px;
+}
+
+
+th, td {
+	padding: 10px;
+}
+
